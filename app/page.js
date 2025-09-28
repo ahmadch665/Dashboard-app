@@ -1,103 +1,193 @@
-import Image from "next/image";
+"use client";
+import Head from "next/head";
+import Link from "next/link";
+import { useState, useEffect } from "react";
+import { MdFileDownload, MdEdit, MdBuild, MdDelete } from "react-icons/md";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              app/page.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+  const [apps, setApps] = useState([]);
+  const [downloadProgress, setDownloadProgress] = useState([]);
+  const [deleteIndex, setDeleteIndex] = useState(null); // which app is selected for delete
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  let pressTimer = null;
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  // Load apps from localStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("apps");
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setApps(parsed);
+      setDownloadProgress(Array(parsed.length).fill(0));
+    } else {
+      const defaultApps = [
+        { 
+          name: "WhatsApp", 
+          img: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
+          color: "#25D366",
+          url: "https://www.whatsapp.com"
+        },
+        { 
+          name: "Instagram", 
+          img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
+          color: "#C13584",
+          url: "https://www.instagram.com"
+        },
+        { 
+          name: "Facebook", 
+          img: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
+          color: "#1877F2",
+          url: "https://www.facebook.com"
+        },
+        { 
+          name: "YouTube", 
+          img: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
+          color: "#FF0000",
+          url: "https://www.youtube.com"
+        },
+      ];
+      localStorage.setItem("apps", JSON.stringify(defaultApps));
+      setApps(defaultApps);
+      setDownloadProgress(Array(defaultApps.length).fill(0));
+    }
+  }, []);
+
+  const handleDownload = (index) => {
+    if (downloadProgress[index] > 0 && downloadProgress[index] < 100) return;
+
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 5;
+      setDownloadProgress((prev) => {
+        const updated = [...prev];
+        updated[index] = progress;
+        return updated;
+      });
+
+      if (progress >= 100) clearInterval(interval);
+    }, 300);
+  };
+
+  const handleDelete = () => {
+    if (deleteIndex !== null) {
+      const updatedApps = apps.filter((_, i) => i !== deleteIndex);
+      setApps(updatedApps);
+      localStorage.setItem("apps", JSON.stringify(updatedApps));
+      setDeleteIndex(null);
+      setShowDeleteModal(false);
+    }
+  };
+
+  return (
+    <>
+      <Head>
+        <title>Dashboard</title>
+      </Head>
+
+      <div className="min-h-screen bg-[#f9eef2] flex flex-col items-center py-8 px-4">
+        <h1 className="text-3xl font-semibold mb-6">Dashboard</h1>
+
+        {/* Apps Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 w-full max-w-3xl">
+          {apps.map((app, i) => (
+            <div
+              key={i}
+              className="bg-white rounded-2xl p-6 shadow-lg flex flex-col items-center"
+              onMouseDown={() => {
+                pressTimer = setTimeout(() => {
+                  setDeleteIndex(i);
+                  setShowDeleteModal(true);
+                }, 1000); // 1 second hold
+              }}
+              onMouseUp={() => clearTimeout(pressTimer)}
+              onMouseLeave={() => clearTimeout(pressTimer)}
+              onTouchStart={() => {
+                pressTimer = setTimeout(() => {
+                  setDeleteIndex(i);
+                  setShowDeleteModal(true);
+                }, 1000);
+              }}
+              onTouchEnd={() => clearTimeout(pressTimer)}
+            >
+              {/* App Image */}
+              <div className="w-24 h-24 rounded-lg overflow-hidden mb-3 flex items-center justify-center">
+                <img src={app.img} alt={app.name} className="object-contain w-full h-full" />
+              </div>
+
+              <h2 className="text-lg font-semibold mb-3">{app.name}</h2>
+
+              {/* Action Buttons */}
+              <div className="flex items-center gap-4 mt-2">
+                {/* Download */}
+                <button
+                  aria-label="download"
+                  onClick={() => handleDownload(i)}
+                  className="w-20 h-20 rounded-full bg-[#2F9BFF] flex items-center justify-center shadow-sm text-white font-bold"
+                >
+                  {downloadProgress[i] === 0 ? (
+                    <MdFileDownload size={30} />
+                  ) : downloadProgress[i] < 100 ? (
+                    `${downloadProgress[i]}%`
+                  ) : (
+                    "✓"
+                  )}
+                </button>
+
+                {/* Edit */}
+                <Link
+                  href={`/edit/${i}`}
+                  className="w-20 h-20 rounded-full bg-[#30A75B] flex items-center justify-center shadow-sm"
+                >
+                  <MdEdit size={28} color="#fff" />
+                </Link>
+
+                {/* Generate APK */}
+                <Link
+  href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.img)}`}
+  className="w-20 h-20 rounded-full bg-[#F05449] flex items-center justify-center shadow-sm"
+>
+  <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+    <MdBuild size={14} color="#F05449" />
+  </span>
+</Link>
+              </div>
+            </div>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+
+        {/* Add New App */}
+        <Link href="/add-new-app">
+          <button
+            className="mt-8 bg-[#2F9BFF] text-white px-6 py-3 rounded-full text-lg font-medium shadow-2xl"
+            aria-label="Add New App"
+          >
+            Add New App
+          </button>
+        </Link>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl p-6 shadow-lg w-80 text-center">
+            <h2 className="text-lg font-semibold mb-4">Delete Confirmation</h2>
+            <p className="text-gray-700 mb-6">Are you sure you want to delete this app?</p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={() => setShowDeleteModal(false)}
+                className="px-6 py-2 rounded-full bg-gray-200 text-gray-800 font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-6 py-2 rounded-full bg-red-500 text-white font-medium"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

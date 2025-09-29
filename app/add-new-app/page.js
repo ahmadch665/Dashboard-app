@@ -2,32 +2,28 @@
 
 import { useState, useEffect } from "react";
 import { FaThLarge, FaPalette } from "react-icons/fa";
-import { MdOutlineWeb, MdAdd, MdImage } from "react-icons/md";
+import { MdOutlineWeb, MdAdd, MdImage, MdArrowBack } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { MdArrowBack } from "react-icons/md";
-
 
 export default function AddNewApp() {
-const router = useRouter(); 
-const [icon, setIcon] = useState(null);
-const [previewUrl, setPreviewUrl] = useState(null);
-const [name, setName] = useState("");
-const [color, setColor] = useState("");
-const [url, setUrl] = useState("");
+  const router = useRouter();
+  const [icon, setIcon] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+  const [name, setName] = useState("");
+  const [color, setColor] = useState("");
+  const [url, setUrl] = useState("");
 
- const handleIconPick = (e) => {
-  if (e.target.files && e.target.files[0]) {
-    setIcon(e.target.files[0]);
-  }
-};
+  const handleIconPick = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setIcon(e.target.files[0]);
+    }
+  };
 
-  // generate blob url whenever icon changes
   useEffect(() => {
     if (icon) {
       const objectUrl = URL.createObjectURL(icon);
       setPreviewUrl(objectUrl);
-
       return () => URL.revokeObjectURL(objectUrl);
     }
   }, [icon]);
@@ -45,111 +41,113 @@ const [url, setUrl] = useState("");
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-pink-50 px-4 py-6">
-      {/* Top Header */}
-      <div className="w-full flex items-center mb-4">
-  <button
-    onClick={() => window.history.back()}
-    className="text-gray-700 cursor-pointer"
-  >
-    <MdArrowBack size={28} /> {/* 👈 bigger back arrow */}
-  </button>
-  <h1 className="mx-auto text-lg font-bold text-black">Add New App Info</h1>
-</div>
-
-      {/* Circle + Plus Icon */}
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-20 rounded-full border-4 border-blue-500 flex items-center justify-center">
-          <MdAdd size={36} className="text-blue-500" />
-        </div>
-        <p className="mt-2 text-blue-600 font-semibold">
-          Enter App Configuration
-        </p>
+    <div className="min-h-screen bg-gradient-to-br from-[#f9eef2] via-[#f5f7fa] to-[#eef2f7] flex flex-col items-center py-10 px-4">
+      {/* Header */}
+      <div className="w-full max-w-md flex items-center mb-8">
+        <button
+          onClick={() => router.back()}
+          className="p-2 rounded-full hover:bg-gray-200 transition"
+        >
+          <MdArrowBack size={26} className="text-gray-700" />
+        </button>
+        <h1 className="mx-auto text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Add New App Info
+        </h1>
       </div>
 
-      {/* Form */}
-      <div className="w-full max-w-md mt-6 space-y-4">
-        {/* App Name */}
-        <div className="relative">
-          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+      {/* Card */}
+      <div className="w-full max-w-md bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-xl border border-gray-100">
+        {/* Circle + Plus */}
+        <div className="flex flex-col items-center mb-6">
+          <div className="w-20 h-20 rounded-full border-4 border-blue-500 flex items-center justify-center shadow-md">
+            <MdAdd size={32} className="text-blue-500" />
+          </div>
+          <p className="mt-2 text-blue-600 font-semibold text-base">
+            Enter App Configuration
+          </p>
+        </div>
+
+        {/* Form */}
+        <div className="space-y-5">
+          {/* App Name */}
+          <fieldset className="border border-gray-200 bg-white rounded-xl px-3 pt-4 pb-2 shadow-sm">
             <legend className="px-1 text-sm text-gray-500">App Name</legend>
-            <div className="flex items-center">
-              <FaThLarge className="text-blue-500 mr-2" />
+            <div className="flex items-center gap-2">
+              <FaThLarge className="text-blue-500" />
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full outline-none text-gray-700 bg-transparent"
+                placeholder="Enter app name"
+                className="w-full outline-none text-gray-700 bg-transparent text-sm"
               />
             </div>
           </fieldset>
-        </div>
 
-        {/* AppBar Color */}
-        <div className="relative">
-          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+          {/* AppBar Color */}
+          <fieldset className="border border-gray-200 bg-white rounded-xl px-3 pt-4 pb-2 shadow-sm">
             <legend className="px-1 text-sm text-gray-500">AppBar Color</legend>
-            <div className="flex items-center">
-              <FaPalette className="text-blue-500 mr-2" />
+            <div className="flex items-center gap-2">
+              <FaPalette className="text-blue-500" />
               <input
                 type="text"
                 value={color}
                 onChange={(e) => setColor(e.target.value)}
-                className="w-full outline-none text-gray-700 bg-transparent"
+                placeholder="#1877F2"
+                className="w-full outline-none text-gray-700 bg-transparent text-sm"
               />
             </div>
           </fieldset>
-        </div>
 
-        {/* Web URL */}
-        <div className="relative">
-          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+          {/* Web URL */}
+          <fieldset className="border border-gray-200 bg-white rounded-xl px-3 pt-4 pb-2 shadow-sm">
             <legend className="px-1 text-sm text-gray-500">Web URL</legend>
-            <div className="flex items-center">
-              <MdOutlineWeb className="text-blue-500 mr-2" />
+            <div className="flex items-center gap-2">
+              <MdOutlineWeb className="text-blue-500" />
               <input
                 type="text"
                 value={url}
                 onChange={(e) => setUrl(e.target.value)}
-                className="w-full outline-none text-gray-700 bg-transparent"
+                placeholder="https://example.com"
+                className="w-full outline-none text-gray-700 bg-transparent text-sm"
               />
             </div>
           </fieldset>
-        </div>
 
-        {/* Pick Icon */}
-        <div className="flex items-center space-x-3">
-          <label className="w-20 h-20 border rounded-lg flex items-center justify-center bg-gray-100 cursor-pointer overflow-hidden">
-            {previewUrl ? (
-              <Image
-                src={previewUrl}
-                alt="Picked Icon"
-                width={64}
-                height={64}
-                className="w-full h-full object-cover rounded-lg"
+          {/* Pick Icon */}
+          <div className="flex items-center gap-3">
+            <label className="w-20 h-20 border rounded-xl flex items-center justify-center bg-gray-50 cursor-pointer overflow-hidden shadow-sm hover:scale-105 transition">
+              {previewUrl ? (
+                <Image
+                  src={previewUrl}
+                  alt="Picked Icon"
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover rounded-xl"
+                />
+              ) : (
+                <MdImage size={28} className="text-gray-400" />
+              )}
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleIconPick}
               />
-            ) : (
-              <MdImage size={32} className="text-gray-400" />
-            )}
-            <input
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleIconPick}
-            />
-          </label>
-          <span className="text-blue-500 font-semibold cursor-pointer">
-            Pick Icon From Gallery
-          </span>
-        </div>
+            </label>
+            <span className="text-blue-500 font-medium text-sm cursor-pointer">
+              Pick Icon From Gallery
+            </span>
+          </div>
 
-        {/* Add Record Button */}
-        <button
-          onClick={handleAdd}
-          className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold shadow hover:bg-blue-600"
-        >
-          Add Record
-        </button>
+          {/* Add Button */}
+          <button
+            onClick={handleAdd}
+            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition"
+          >
+            Add Record
+          </button>
+        </div>
       </div>
     </div>
   );

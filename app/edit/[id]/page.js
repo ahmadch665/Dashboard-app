@@ -1,11 +1,10 @@
 "use client";
-import { MdArrowBack } from "react-icons/md"; 
+import { MdArrowBack } from "react-icons/md";
 import { useState, useEffect, useRef } from "react";
 import { FaThLarge, FaPalette } from "react-icons/fa";
 import { MdOutlineWeb, MdImage } from "react-icons/md";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
-
 
 export default function EditApp() {
   const params = useParams();
@@ -47,7 +46,6 @@ export default function EditApp() {
   const [appUrl, setAppUrl] = useState("");
   const [appImg, setAppImg] = useState("");
 
-  // load from localStorage or defaults
   useEffect(() => {
     const saved = localStorage.getItem("apps");
     let appsArray;
@@ -67,13 +65,13 @@ export default function EditApp() {
       localStorage.setItem("apps", JSON.stringify(defaultApps));
     }
 
-    const chosen = Number.isFinite(id) && appsArray[id] ? appsArray[id] : appsArray[0];
+    const chosen =
+      Number.isFinite(id) && appsArray[id] ? appsArray[id] : appsArray[0];
     setAppName(chosen.name || "");
     setAppColor(chosen.color || "");
     setAppUrl(chosen.url || "");
     setAppImg(chosen.img || "");
     setIconFile(null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   const handleIconPick = (e) => {
@@ -81,7 +79,7 @@ export default function EditApp() {
       const file = e.target.files[0];
       setIconFile(file);
       const url = URL.createObjectURL(file);
-      setAppImg(url); // preview top circle immediately
+      setAppImg(url);
     }
   };
 
@@ -103,7 +101,9 @@ export default function EditApp() {
       }
     }
 
-    const newImg = iconFile ? URL.createObjectURL(iconFile) : (appImg || "https://via.placeholder.com/100");
+    const newImg = iconFile
+      ? URL.createObjectURL(iconFile)
+      : appImg || "https://via.placeholder.com/100";
 
     const updatedApp = {
       name: appName,
@@ -123,105 +123,110 @@ export default function EditApp() {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-screen bg-pink-50 px-4 py-6">
+    <div className="flex flex-col items-center min-h-screen 
+                    bg-gradient-to-br from-[#f9eef2] via-[#f5f7fa] to-[#eef2f7] 
+                    px-4 py-8">
       {/* Top header */}
-     <div className="w-full flex items-center mb-4">
-  <button
-    onClick={() => window.history.back()}
-    className="text-gray-700 cursor-pointer"
-  >
-    <MdArrowBack size={28} /> {/* 👈 bigger back arrow */}
-  </button>
-        <h1 className="mx-auto text-lg font-bold text-black">Edit App Info</h1>
+      <div className="w-full flex items-center mb-8">
+        <button
+          onClick={() => window.history.back()}
+          className="text-gray-700 cursor-pointer hover:scale-110 transition"
+        >
+          <MdArrowBack size={28} />
+        </button>
+        <h1 className="mx-auto text-2xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Edit App Info
+        </h1>
       </div>
 
       {/* Circle with current app icon */}
-      <div className="flex flex-col items-center">
-        <div className="w-20 h-20 rounded-full border-4 border-blue-500 flex items-center justify-center bg-white overflow-hidden">
+      <div className="flex flex-col items-center mb-8">
+        <div className="w-18 h-18 rounded-xl 
+                        flex items-center justify-center bg-white overflow-hidden 
+                        shadow-lg hover:scale-105 transition">
           {appImg ? (
-  <Image
-    src={appImg}
-    alt={appName}
-    width={80}
-    height={80}
-    className="w-full h-full object-contain"
-  />
-) : (
-  <MdImage size={36} className="text-blue-500" />
-)}
+            <Image
+              src={appImg}
+              alt={appName}
+              width={100}
+              height={100}
+              className="w-full h-full object-contain"
+            />
+          ) : (
+            <MdImage size={40} className="text-blue-500" />
+          )}
         </div>
       </div>
 
-      {/* Form */}
-      <form onSubmit={handleSave} className="w-full max-w-md mt-6 space-y-4">
-        {/* App Name - label overlaps the border and floats to top-right */}
+      {/* Whole Form */}
+      <form
+        onSubmit={handleSave}
+        className="w-full max-w-md bg-white/70 backdrop-blur-md 
+                   rounded-2xl shadow-xl p-6 space-y-6 border border-gray-100"
+      >
         {/* App Name */}
-<div className="relative mt-4">
-  <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
-    <legend className="px-1 text-sm text-gray-500">
-      App Name
-    </legend>
+        <div className="relative">
+          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+            <legend className="px-1 text-sm text-gray-500">App Name</legend>
+            <div className="flex items-center">
+              <FaThLarge className="text-blue-500 mr-2" />
+              <input
+                type="text"
+                value={appName}
+                onChange={(e) => setAppName(e.target.value)}
+                className="w-full outline-none text-gray-700 bg-transparent"
+              />
+            </div>
+          </fieldset>
+        </div>
 
-    <div className="flex items-center">
-      <FaThLarge className="text-blue-500 mr-2" />
-      <input
-        type="text"
-        value={appName}
-        onChange={(e) => setAppName(e.target.value)}
-        className="w-full outline-none text-gray-700 bg-transparent"
-      />
-    </div>
-  </fieldset>
-</div>
-        <div className="relative mt-4">
-  <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
-    <legend className="px-1 text-sm text-gray-500">
-      AppBar Color
-    </legend>
+        {/* AppBar Color */}
+        <div className="relative">
+          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+            <legend className="px-1 text-sm text-gray-500">AppBar Color</legend>
+            <div className="flex items-center">
+              <FaPalette className="text-blue-500 mr-2" />
+              <input
+                type="text"
+                value={appColor}
+                onChange={(e) => setAppColor(e.target.value)}
+                className="w-full outline-none text-gray-700 bg-transparent"
+              />
+            </div>
+          </fieldset>
+        </div>
 
-    <div className="flex items-center">
-      <FaPalette className="text-blue-500 mr-2" />
-      <input
-        type="text"
-        value={appColor}
-        onChange={(e) => setAppColor(e.target.value)}
-        className="w-full outline-none text-gray-700 bg-transparent"
-      />
-    </div>
-  </fieldset>
-</div>
+        {/* Web URL */}
+        <div className="relative">
+          <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
+            <legend className="px-1 text-sm text-gray-500">Web URL</legend>
+            <div className="flex items-center">
+              <MdOutlineWeb className="text-blue-500 mr-2" />
+              <input
+                type="text"
+                value={appUrl}
+                onChange={(e) => setAppUrl(e.target.value)}
+                className="w-full outline-none text-gray-700 bg-transparent"
+              />
+            </div>
+          </fieldset>
+        </div>
 
-        <div className="relative mt-4">
-  <fieldset className="border border-gray-300 bg-white rounded-lg px-3 pt-4 pb-2">
-    <legend className="px-1 text-sm text-gray-500">
-      Web URL
-    </legend>
-
-    <div className="flex items-center">
-      <MdOutlineWeb className="text-blue-500 mr-2" />
-      <input
-        type="text"
-        value={appUrl}
-        onChange={(e) => setAppUrl(e.target.value)}
-        className="w-full outline-none text-gray-700 bg-transparent"
-      />
-    </div>
-  </fieldset>
-</div>
         {/* Pick Icon */}
-        <div className="flex items-center space-x-3">
-          <label className="w-20 h-20 border rounded-lg flex items-center justify-center bg-gray-100 cursor-pointer overflow-hidden">
-           {iconFile ? (
-  <Image
-    src={URL.createObjectURL(iconFile)}
-    alt="Picked Icon"
-    width={80}
-    height={80}
-    className="w-full h-full object-cover rounded-lg"
-  />
-) : (
-  <MdImage size={32} className="text-gray-400" />
-)}
+        <div className="flex items-center space-x-4">
+          <label className="w-20 h-20 border rounded-lg flex items-center justify-center 
+                           bg-gray-100 cursor-pointer overflow-hidden hover:scale-105 transition">
+            {iconFile ? (
+              <Image
+                src={URL.createObjectURL(iconFile)}
+                alt="Picked Icon"
+                width={80}
+                height={80}
+                className="w-full h-full object-cover rounded-lg"
+              />
+            ) : (
+              <MdImage size={32} className="text-gray-400" />
+            )}
             <input
               type="file"
               accept="image/*"
@@ -230,14 +235,21 @@ export default function EditApp() {
               onChange={handleIconPick}
             />
           </label>
-
-          <span onClick={handlePickClick} className="text-blue-500 font-semibold cursor-pointer">
+          <span
+            onClick={handlePickClick}
+            className="text-blue-600 font-semibold cursor-pointer hover:underline"
+          >
             Pick Icon From Gallery
           </span>
         </div>
 
         {/* Save Changes button */}
-        <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded-lg font-semibold shadow hover:bg-blue-600">
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
+                     text-white py-3 rounded-xl font-semibold shadow-lg 
+                     hover:scale-105 transition-transform"
+        >
           Save Changes
         </button>
       </form>

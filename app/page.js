@@ -90,15 +90,19 @@ export default function Home() {
           <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Dashboard
           </h1>
-          <Link href="/add-new-app">
-            <button
-              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 
-                         rounded-xl text-lg font-medium shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
-              aria-label="Add New App"
-            >
-              + Add New App
-            </button>
-          </Link>
+         <Link href="/add-new-app">
+  <button
+    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
+               px-4 py-2 sm:px-6 sm:py-3 rounded-xl 
+               text-base sm:text-lg font-medium shadow-lg 
+               hover:scale-105 transition-transform duration-300 cursor-pointer 
+               whitespace-nowrap"
+    aria-label="Add New App"
+  >
+    Add New App
+  </button>
+</Link>
+
         </div>
 
         {/* Apps Grid */}

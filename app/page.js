@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MdFileDownload, MdEdit, MdBuild, MdDelete } from "react-icons/md";
+import Image from "next/image";
 
 export default function Home() {
   const [apps, setApps] = useState([]);
@@ -110,7 +111,13 @@ export default function Home() {
             >
               {/* App Image */}
               <div className="w-24 h-24 rounded-lg overflow-hidden mb-3 flex items-center justify-center">
-                <img src={app.img} alt={app.name} className="object-contain w-full h-full" />
+                 <Image
+    src={app.img}
+    alt={app.name}
+    width={96}   // 24 * 4 (tailwind ka w-24)
+    height={96}  // 24 * 4 (tailwind ka h-24)
+    className="object-contain w-full h-full"
+  />
               </div>
 
               <h2 className="text-lg font-semibold mb-3">{app.name}</h2>
@@ -121,7 +128,7 @@ export default function Home() {
                 <button
                   aria-label="download"
                   onClick={() => handleDownload(i)}
-                  className="w-20 h-20 rounded-full bg-[#2F9BFF] flex items-center justify-center shadow-sm text-white font-bold"
+                  className="w-20 h-20 rounded-full bg-[#2F9BFF] flex items-center justify-center shadow-sm text-white font-bold cursor-pointer"
                 >
                   {downloadProgress[i] === 0 ? (
                     <MdFileDownload size={30} />
@@ -157,7 +164,7 @@ export default function Home() {
         {/* Add New App */}
         <Link href="/add-new-app">
           <button
-            className="mt-8 bg-[#2F9BFF] text-white px-6 py-3 rounded-full text-lg font-medium shadow-2xl"
+            className="mt-8 bg-[#2F9BFF] text-white px-6 py-3 rounded-full text-lg font-medium shadow-2xl cursor-pointer"
             aria-label="Add New App"
           >
             Add New App

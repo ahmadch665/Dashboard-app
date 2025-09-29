@@ -134,10 +134,16 @@ export default function EditApp() {
       <div className="flex flex-col items-center">
         <div className="w-20 h-20 rounded-full border-4 border-blue-500 flex items-center justify-center bg-white overflow-hidden">
           {appImg ? (
-            <img src={appImg} alt={appName} className="w-full h-full object-contain" />
-          ) : (
-            <MdImage size={36} className="text-blue-500" />
-          )}
+  <Image
+    src={appImg}
+    alt={appName}
+    width={80}
+    height={80}
+    className="w-full h-full object-contain"
+  />
+) : (
+  <MdImage size={36} className="text-blue-500" />
+)}
         </div>
       </div>
 
@@ -200,11 +206,17 @@ export default function EditApp() {
         {/* Pick Icon */}
         <div className="flex items-center space-x-3">
           <label className="w-20 h-20 border rounded-lg flex items-center justify-center bg-gray-100 cursor-pointer overflow-hidden">
-            {iconFile ? (
-              <img src={URL.createObjectURL(iconFile)} alt="Picked Icon" className="w-full h-full object-cover rounded-lg" />
-            ) : (
-              <MdImage size={32} className="text-gray-400" />
-            )}
+           {iconFile ? (
+  <Image
+    src={URL.createObjectURL(iconFile)}
+    alt="Picked Icon"
+    width={80}
+    height={80}
+    className="w-full h-full object-cover rounded-lg"
+  />
+) : (
+  <MdImage size={32} className="text-gray-400" />
+)}
             <input
               type="file"
               accept="image/*"

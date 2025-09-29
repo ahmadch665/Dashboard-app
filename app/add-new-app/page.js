@@ -1,30 +1,41 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaThLarge, FaPalette } from "react-icons/fa";
 import { MdOutlineWeb, MdAdd, MdImage } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function AddNewApp() {
-  const [icon, setIcon] = useState(null);
-  const [name, setName] = useState("");
-  const [color, setColor] = useState("");
-  const [url, setUrl] = useState("");
-  const router = useRouter();
+const [icon, setIcon] = useState(null);
+const [previewUrl, setPreviewUrl] = useState(null);
+const [name, setName] = useState("");
+const [color, setColor] = useState("");
+const [url, setUrl] = useState("");
 
-  const handleIconPick = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setIcon(e.target.files[0]);
+ const handleIconPick = (e) => {
+  if (e.target.files && e.target.files[0]) {
+    setIcon(e.target.files[0]);
+  }
+};
+
+  // generate blob url whenever icon changes
+  useEffect(() => {
+    if (icon) {
+      const objectUrl = URL.createObjectURL(icon);
+      setPreviewUrl(objectUrl);
+
+      return () => URL.revokeObjectURL(objectUrl);
     }
-  };
+  }, [icon]);
 
   const handleAdd = () => {
-    const apps = JSON.parse(localStorage.getItem("apps")) || [];
+    const apps = JSON.parse(localStorage.getItem("apps") || "[]");
     apps.push({
       name,
       color,
       url,
-      img: icon ? URL.createObjectURL(icon) : "https://via.placeholder.com/100"
+      img: previewUrl || "https://via.placeholder.com/100",
     });
     localStorage.setItem("apps", JSON.stringify(apps));
     router.push("/");
@@ -105,11 +116,13 @@ export default function AddNewApp() {
 
         {/* Pick Icon */}
         <div className="flex items-center space-x-3">
-          <label className="w-20 h-20 border rounded-lg flex items-center justify-center bg-gray-100 cursor-pointer">
-            {icon ? (
-              <img
-                src={URL.createObjectURL(icon)}
+          <label className="w-20 h-20 border rounded-lg flex items-center justify-center bg-gray-100 cursor-pointer overflow-hidden">
+            {previewUrl ? (
+              <Image
+                src={previewUrl}
                 alt="Picked Icon"
+                width={64}
+                height={64}
                 className="w-full h-full object-cover rounded-lg"
               />
             ) : (

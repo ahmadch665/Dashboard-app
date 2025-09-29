@@ -1,8 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 
-export default function GenerateApk() {
+export default function GenerateApkContent() {
   const searchParams = useSearchParams();
   const appName = searchParams.get("name") || "Unknown App";
   const appImg =
@@ -21,15 +23,17 @@ export default function GenerateApk() {
 
       {/* App Icon */}
       <div className="flex flex-col items-center justify-center mt-20">
-        <img
-          src={appImg}
+        <Image
+          src={appImg.startsWith("http") ? appImg : `/images/${appImg}`}
           alt={appName}
-          className="w-28 h-28 mb-4"
+          width={112} // w-28
+          height={112} // h-28
+          className="mb-4 rounded-lg"
         />
         <h2 className="text-lg font-semibold mb-6">{appName}</h2>
 
         {/* Red Generate APK Button */}
-        <button className="bg-[#F05449] text-white px-10 py-3 rounded-full text-lg font-medium shadow-lg">
+        <button className="bg-[#F05449] text-white px-10 py-3 rounded-full text-lg font-medium shadow-lg hover:opacity-90 transition">
           Generate Apk
         </button>
       </div>

@@ -248,7 +248,7 @@ export default function EditApp() {
           type="submit"
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
                      text-white py-3 rounded-xl font-semibold shadow-lg 
-                     hover:scale-105 transition-transform"
+                     hover:scale-105 transition-transform cursor-pointer"
         >
           Save Changes
         </button>

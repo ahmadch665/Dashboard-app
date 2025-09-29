@@ -143,7 +143,7 @@ export default function AddNewApp() {
           {/* Add Button */}
           <button
             onClick={handleAdd}
-            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition"
+            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer"
           >
             Add Record
           </button>

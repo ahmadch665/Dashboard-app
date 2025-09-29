@@ -93,7 +93,7 @@ export default function Home() {
           <Link href="/add-new-app">
             <button
               className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 
-                         rounded-xl text-lg font-medium shadow-lg hover:scale-105 transition-transform duration-300"
+                         rounded-xl text-lg font-medium shadow-lg hover:scale-105 transition-transform duration-300 cursor-pointer"
               aria-label="Add New App"
             >
               + Add New App

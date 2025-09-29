@@ -4,6 +4,8 @@ import { useState, useEffect, useRef } from "react";
 import { FaThLarge, FaPalette } from "react-icons/fa";
 import { MdOutlineWeb, MdImage } from "react-icons/md";
 import { useRouter, useParams } from "next/navigation";
+import Image from "next/image";
+
 
 export default function EditApp() {
   const params = useParams();

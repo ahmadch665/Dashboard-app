@@ -157,7 +157,7 @@ export default function Home() {
         {/* Add New App */}
         <Link href="/add-new-app">
           <button
-            className="mt-8 bg-[#2F9BFF] text-white px-6 py-3 rounded-full text-lg font-medium shadow-2xl"
+            className="mt-8 bg-[#2F9BFF] text-white px-6 py-3 rounded-full text-lg font-medium shadow-2xl cursor-pointer"
             aria-label="Add New App"
           >
             Add New App

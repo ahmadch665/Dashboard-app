@@ -2,6 +2,9 @@
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
+import { MdArrowBack } from "react-icons/md";
+
 
 export default function GenerateApkContent() {
   const searchParams = useSearchParams();

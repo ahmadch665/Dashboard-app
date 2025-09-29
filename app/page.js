@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MdFileDownload, MdEdit, MdBuild, MdDelete } from "react-icons/md";
+import Image from "next/image";
 
 export default function Home() {
   const [apps, setApps] = useState([]);
@@ -109,8 +110,13 @@ export default function Home() {
               onTouchEnd={() => clearTimeout(pressTimer)}
             >
               {/* App Image */}
-              <div className="w-24 h-24 rounded-lg overflow-hidden mb-3 flex items-center justify-center">
-                <img src={app.img} alt={app.name} className="object-contain w-full h-full" />
+              <div className="w-24 h-24 rounded-lg overflow-hidden mb-3 flex items-center justify-center relative">
+                <Image
+                  src={app.img}
+                  alt={app.name}
+                  fill
+                  className="object-contain"
+                />
               </div>
 
               <h2 className="text-lg font-semibold mb-3">{app.name}</h2>
@@ -142,13 +148,13 @@ export default function Home() {
 
                 {/* Generate APK */}
                 <Link
-  href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.img)}`}
-  className="w-20 h-20 rounded-full bg-[#F05449] flex items-center justify-center shadow-sm"
->
-  <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-    <MdBuild size={14} color="#F05449" />
-  </span>
-</Link>
+                  href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.img)}`}
+                  className="w-20 h-20 rounded-full bg-[#F05449] flex items-center justify-center shadow-sm"
+                >
+                  <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
+                    <MdBuild size={14} color="#F05449" />
+                  </span>
+                </Link>
               </div>
             </div>
           ))}

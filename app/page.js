@@ -83,7 +83,7 @@ export default function Home() {
         <title>Dashboard</title>
       </Head>
 
-      <div className="min-h-screen bg-[#f9eef2] flex flex-col items-center py-8 px-4">
+      <div className="min-h-screen bg-[#f9eef2] flex flex-col items-center py-8 px-4 text-black">
         <h1 className="text-3xl font-semibold mb-6">Dashboard</h1>
 
         {/* Apps Grid */}
@@ -121,7 +121,7 @@ export default function Home() {
                 <button
                   aria-label="download"
                   onClick={() => handleDownload(i)}
-                  className="w-20 h-20 rounded-full bg-[#2F9BFF] flex items-center justify-center shadow-sm text-white font-bold"
+                  className="w-20 h-20 rounded-full bg-[#2F9BFF] flex items-center justify-center shadow-sm text-white font-bold cursor-pointer"
                 >
                   {downloadProgress[i] === 0 ? (
                     <MdFileDownload size={30} />
@@ -169,7 +169,7 @@ export default function Home() {
       {showDeleteModal && (
         <div className="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-2xl p-6 shadow-lg w-80 text-center">
-            <h2 className="text-lg font-semibold mb-4">Delete Confirmation</h2>
+            <h2 className="text-lg font-semibold mb-4 text-black">Delete Confirmation</h2>
             <p className="text-gray-700 mb-6">Are you sure you want to delete this app?</p>
             <div className="flex justify-center gap-4">
               <button

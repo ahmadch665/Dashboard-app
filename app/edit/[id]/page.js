@@ -1,5 +1,5 @@
 "use client";
-
+import { MdArrowBack } from "react-icons/md"; 
 import { useState, useEffect, useRef } from "react";
 import { FaThLarge, FaPalette } from "react-icons/fa";
 import { MdOutlineWeb, MdImage } from "react-icons/md";
@@ -123,11 +123,14 @@ export default function EditApp() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-pink-50 px-4 py-6">
       {/* Top header */}
-      <div className="w-full flex items-center mb-4">
-        <button onClick={() => window.history.back()} className="text-lg font-bold text-gray-700">
-          ←
-        </button>
-        <h1 className="mx-auto text-lg font-bold">Edit App Info</h1>
+     <div className="w-full flex items-center mb-4">
+  <button
+    onClick={() => window.history.back()}
+    className="text-gray-700 cursor-pointer"
+  >
+    <MdArrowBack size={28} /> {/* 👈 bigger back arrow */}
+  </button>
+        <h1 className="mx-auto text-lg font-bold text-black">Edit App Info</h1>
       </div>
 
       {/* Circle with current app icon */}

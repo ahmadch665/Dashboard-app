@@ -9,6 +9,7 @@ import { MdArrowBack } from "react-icons/md";
 
 
 export default function AddNewApp() {
+const router = useRouter(); 
 const [icon, setIcon] = useState(null);
 const [previewUrl, setPreviewUrl] = useState(null);
 const [name, setName] = useState("");

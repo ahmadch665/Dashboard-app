@@ -163,10 +163,10 @@ export default function Home() {
                 {/* Generate APK */}
                 <Link
                   href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.img)}`}
-                  className="w-20 h-20 rounded-full bg-[#F05449] flex items-center justify-center shadow-sm"
+                  className="w-14 h-14 rounded-full bg-[#F05449] flex items-center justify-center shadow-sm"
                 >
-                  <span className="w-8 h-8 rounded-full bg-white flex items-center justify-center">
-                    <MdBuild size={14} color="#F05449" />
+                  <span className="w-8 h-8 rounded-full bg-red flex items-center justify-center">
+                    <MdBuild size={14} color="#fff" />
                   </span>
                 </Link>
               </div>

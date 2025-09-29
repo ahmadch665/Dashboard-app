@@ -3,7 +3,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { MdFileDownload, MdEdit, MdBuild, MdDelete } from "react-icons/md";
-import Image from "next/image";
 
 export default function Home() {
   const [apps, setApps] = useState([]);
@@ -111,13 +110,7 @@ export default function Home() {
             >
               {/* App Image */}
               <div className="w-24 h-24 rounded-lg overflow-hidden mb-3 flex items-center justify-center">
-                 <Image
-    src={app.img}
-    alt={app.name}
-    width={96}   // 24 * 4 (tailwind ka w-24)
-    height={96}  // 24 * 4 (tailwind ka h-24)
-    className="object-contain w-full h-full"
-  />
+                <img src={app.img} alt={app.name} className="object-contain w-full h-full" />
               </div>
 
               <h2 className="text-lg font-semibold mb-3">{app.name}</h2>

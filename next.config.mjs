@@ -5,12 +5,7 @@ const nextConfig = {
       "upload.wikimedia.org",
       "via.placeholder.com",
     ],
-     remotePatterns: [
-      {
-        protocol: "blob",
-        hostname: "**", // blob URLs ko allow karega
-      },
-    ],
+    
   },
 };
 

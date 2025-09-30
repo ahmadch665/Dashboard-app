@@ -13,6 +13,7 @@ export default function AddNewApp() {
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleIconPick = (e) => {
     if (e.target.files && e.target.files[0]) {
@@ -28,16 +29,49 @@ export default function AddNewApp() {
     }
   }, [icon]);
 
-  const handleAdd = () => {
-    const apps = JSON.parse(localStorage.getItem("apps") || "[]");
-    apps.push({
-      name,
-      color,
-      url,
-      img: previewUrl || "https://via.placeholder.com/100",
-    });
-    localStorage.setItem("apps", JSON.stringify(apps));
-    router.push("/");
+  const handleAdd = async () => {
+    try {
+      setLoading(true);
+
+      let uploadedUrl = "https://via.placeholder.com/100";
+
+      if (icon) {
+        const formData = new FormData();
+        formData.append("files", icon);
+
+        const res = await fetch(
+          "https://imageupload-xfga.onrender.com/api/file/uploadimage",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+
+        const contentType = res.headers.get("content-type");
+
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          uploadedUrl = data?.data?.[0]?.image || uploadedUrl;
+        } else {
+          const text = await res.text();
+          console.error("Non-JSON response:", text);
+        }
+      }
+
+      const apps = JSON.parse(localStorage.getItem("apps") || "[]");
+      apps.push({
+        name,
+        color,
+        url,
+        img: uploadedUrl,
+      });
+      localStorage.setItem("apps", JSON.stringify(apps));
+      router.push("/");
+    } catch (err) {
+      console.error("Upload error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -143,9 +177,10 @@ export default function AddNewApp() {
           {/* Add Button */}
           <button
             onClick={handleAdd}
-            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer"
+            disabled={loading}
+            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer disabled:opacity-50"
           >
-            Add Record
+            {loading ? "Uploading..." : "Add New App"}
           </button>
         </div>
       </div>

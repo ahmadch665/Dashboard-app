@@ -134,7 +134,9 @@ export default function Home() {
                 <Image
                   src={app.img}
                   alt={app.name}
-                  fill
+                  width={96}
+                  height={96}
+                  unoptimized
                   className="object-contain p-2"
                 />
               </div>

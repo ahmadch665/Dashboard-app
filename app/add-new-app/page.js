@@ -13,7 +13,9 @@ export default function AddNewApp() {
   const [name, setName] = useState("");
   const [color, setColor] = useState("");
   const [url, setUrl] = useState("");
+  const [uploading, setUploading] = useState(false);
 
+  // Preview selected icon
   const handleIconPick = (e) => {
     if (e.target.files && e.target.files[0]) {
       setIcon(e.target.files[0]);
@@ -28,16 +30,41 @@ export default function AddNewApp() {
     }
   }, [icon]);
 
-  const handleAdd = () => {
-    const apps = JSON.parse(localStorage.getItem("apps") || "[]");
-    apps.push({
-      name,
-      color,
-      url,
-      img: previewUrl || "https://via.placeholder.com/100",
-    });
-    localStorage.setItem("apps", JSON.stringify(apps));
-    router.push("/");
+  const handleAdd = async () => {
+    if (!icon) return alert("Please pick an icon");
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", icon);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const result = await res.json();
+      console.log("Upload Result:", result);
+
+      if (result?.success && result.file) {
+        const apps = JSON.parse(localStorage.getItem("apps") || "[]");
+        apps.push({
+          name,
+          color,
+          url,
+          img: result.file, // uploaded image URL
+        });
+        localStorage.setItem("apps", JSON.stringify(apps));
+        router.push("/");
+      } else {
+        alert("Upload failed. Try again.");
+      }
+    } catch (err) {
+      console.error("Upload Error:", err);
+      alert("Upload failed. Check console.");
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
@@ -143,9 +170,12 @@ export default function AddNewApp() {
           {/* Add Button */}
           <button
             onClick={handleAdd}
-            className="w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer"
+            disabled={uploading}
+            className={`w-full py-3 rounded-xl font-semibold text-base text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer ${
+              uploading ? "opacity-60 cursor-not-allowed" : ""
+            }`}
           >
-            Add Record
+            {uploading ? "Uploading..." : "Add Record"}
           </button>
         </div>
       </div>

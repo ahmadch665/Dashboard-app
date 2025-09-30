@@ -5,6 +5,10 @@ import { useState, useEffect } from "react";
 import { MdFileDownload, MdEdit, MdBuild } from "react-icons/md";
 import Image from "next/image";
 
+// 🔹 Firestore imports
+import { db } from "../firebase";
+import { collection, onSnapshot, deleteDoc, doc } from "firebase/firestore";
+
 export default function Home() {
   const [apps, setApps] = useState([]);
   const [downloadProgress, setDownloadProgress] = useState([]);
@@ -12,44 +16,18 @@ export default function Home() {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   let pressTimer = null;
 
-  // Load apps from localStorage
+  // 🔹 Live load apps from Firestore
   useEffect(() => {
-    const saved = localStorage.getItem("apps");
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      setApps(parsed);
-      setDownloadProgress(Array(parsed.length).fill(0));
-    } else {
-      const defaultApps = [
-        {
-          name: "WhatsApp",
-          img: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
-          color: "#25D366",
-          url: "https://www.whatsapp.com",
-        },
-        {
-          name: "Instagram",
-          img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
-          color: "#C13584",
-          url: "https://www.instagram.com",
-        },
-        {
-          name: "Facebook",
-          img: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-          color: "#1877F2",
-          url: "https://www.facebook.com",
-        },
-        {
-          name: "YouTube",
-          img: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
-          color: "#FF0000",
-          url: "https://www.youtube.com",
-        },
-      ];
-      localStorage.setItem("apps", JSON.stringify(defaultApps));
-      setApps(defaultApps);
-      setDownloadProgress(Array(defaultApps.length).fill(0));
-    }
+    const unsubscribe = onSnapshot(collection(db, "apps"), (snapshot) => {
+      const appsData = snapshot.docs.map((d) => ({
+        id: d.id,
+        ...d.data(),
+      }));
+      setApps(appsData);
+      setDownloadProgress(Array(appsData.length).fill(0));
+    });
+
+    return () => unsubscribe();
   }, []);
 
   const handleDownload = (index) => {
@@ -68,13 +46,18 @@ export default function Home() {
     }, 300);
   };
 
-  const handleDelete = () => {
+  // 🔹 Delete from Firestore
+  const handleDelete = async () => {
     if (deleteIndex !== null) {
-      const updatedApps = apps.filter((_, i) => i !== deleteIndex);
-      setApps(updatedApps);
-      localStorage.setItem("apps", JSON.stringify(updatedApps));
-      setDeleteIndex(null);
-      setShowDeleteModal(false);
+      try {
+        const appToDelete = apps[deleteIndex];
+        await deleteDoc(doc(db, "apps", appToDelete.id));
+
+        setDeleteIndex(null);
+        setShowDeleteModal(false);
+      } catch (error) {
+        console.error("Error deleting app:", error);
+      }
     }
   };
 
@@ -90,26 +73,25 @@ export default function Home() {
           <h1 className="text-4xl font-extrabold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
             Dashboard
           </h1>
-         <Link href="/add-new-app">
-  <button
-    className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
-               px-4 py-2 sm:px-6 sm:py-3 rounded-xl 
-               text-base sm:text-lg font-medium shadow-lg 
-               hover:scale-105 transition-transform duration-300 cursor-pointer 
-               whitespace-nowrap"
-    aria-label="Add New App"
-  >
-    Add New App
-  </button>
-</Link>
-
+          <Link href="/add-new-app">
+            <button
+              className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white 
+                         px-4 py-2 sm:px-6 sm:py-3 rounded-xl 
+                         text-base sm:text-lg font-medium shadow-lg 
+                         hover:scale-105 transition-transform duration-300 cursor-pointer 
+                         whitespace-nowrap"
+              aria-label="Add New App"
+            >
+              Add New App
+            </button>
+          </Link>
         </div>
 
         {/* Apps Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 w-full max-w-6xl">
           {apps.map((app, i) => (
             <div
-              key={i}
+              key={app.id}
               className="bg-white/70 backdrop-blur-lg rounded-2xl p-6 shadow-lg 
                          flex flex-col items-center border border-gray-100 hover:shadow-2xl 
                          transition-all duration-300 cursor-pointer group"
@@ -132,7 +114,7 @@ export default function Home() {
               {/* App Image */}
               <div className="w-24 h-24 rounded-2xl overflow-hidden mb-4 flex items-center justify-center relative shadow-md group-hover:scale-105 transition-transform">
                 <Image
-                  src={app.img}
+                  src={app.iconUrl || "/placeholder.png"}
                   alt={app.name}
                   width={96}
                   height={96}
@@ -166,7 +148,7 @@ export default function Home() {
 
                 {/* Edit */}
                 <Link
-                  href={`/edit/${i}`}
+                  href={`/edit/${app.id}`}
                   className="w-14 h-14 rounded-full bg-gradient-to-r from-green-500 to-emerald-600 
                              flex items-center justify-center shadow-md hover:scale-110 transition-all duration-300"
                 >
@@ -175,7 +157,7 @@ export default function Home() {
 
                 {/* Generate APK */}
                 <Link
-                  href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.img)}`}
+                  href={`/generate-apk?name=${encodeURIComponent(app.name)}&img=${encodeURIComponent(app.iconUrl || "")}`}
                   className="w-14 h-14 rounded-full bg-gradient-to-r from-red-500 to-pink-600 
                              flex items-center justify-center shadow-md hover:scale-110 transition-all duration-300"
                 >

@@ -6,6 +6,11 @@ import { MdOutlineWeb, MdAdd, MdImage, MdArrowBack } from "react-icons/md";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
+// 🔹 Firestore imports
+import { db } from "@/firebase";
+
+import { collection, addDoc } from "firebase/firestore";
+
 export default function AddNewApp() {
   const router = useRouter();
   const [icon, setIcon] = useState(null);
@@ -58,14 +63,14 @@ export default function AddNewApp() {
         }
       }
 
-      const apps = JSON.parse(localStorage.getItem("apps") || "[]");
-      apps.push({
+      // 🔹 Save new app to Firestore
+      await addDoc(collection(db, "apps"), {
         name,
         color,
         url,
-        img: uploadedUrl,
+        iconUrl: uploadedUrl,
       });
-      localStorage.setItem("apps", JSON.stringify(apps));
+
       router.push("/");
     } catch (err) {
       console.error("Upload error:", err);

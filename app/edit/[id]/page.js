@@ -5,73 +5,50 @@ import { FaThLarge, FaPalette } from "react-icons/fa";
 import { MdOutlineWeb, MdImage } from "react-icons/md";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
+import { db } from "@/firebase";
+import {
+  doc,
+  getDoc,
+  updateDoc,
+  serverTimestamp,
+} from "firebase/firestore";
 
 export default function EditApp() {
   const params = useParams();
   const router = useRouter();
-  const id = typeof params?.id === "string" ? parseInt(params.id, 10) : 0;
+  const id = typeof params?.id === "string" ? params.id : null; // Firestore doc id
 
   const fileInputRef = useRef(null);
-
-  const defaultApps = [
-    {
-      name: "WhatsApp",
-      color: "#25D366",
-      url: "https://www.whatsapp.com",
-      img: "https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg",
-    },
-    {
-      name: "Instagram",
-      color: "#C13584",
-      url: "https://www.instagram.com",
-      img: "https://upload.wikimedia.org/wikipedia/commons/a/a5/Instagram_icon.png",
-    },
-    {
-      name: "Facebook",
-      color: "#1877F2",
-      url: "https://www.facebook.com",
-      img: "https://upload.wikimedia.org/wikipedia/commons/5/51/Facebook_f_logo_%282019%29.svg",
-    },
-    {
-      name: "YouTube",
-      color: "#FF0000",
-      url: "https://www.youtube.com",
-      img: "https://upload.wikimedia.org/wikipedia/commons/b/b8/YouTube_Logo_2017.svg",
-    },
-  ];
 
   const [iconFile, setIconFile] = useState(null);
   const [appName, setAppName] = useState("");
   const [appColor, setAppColor] = useState("");
   const [appUrl, setAppUrl] = useState("");
   const [appImg, setAppImg] = useState("");
+  const [loading, setLoading] = useState(false);
 
+  // Fetch app from Firestore
   useEffect(() => {
-    const saved = localStorage.getItem("apps");
-    let appsArray;
-    if (saved) {
+    const fetchApp = async () => {
+      if (!id) return;
       try {
-        appsArray = JSON.parse(saved);
-        if (!Array.isArray(appsArray) || appsArray.length === 0) {
-          appsArray = defaultApps;
-          localStorage.setItem("apps", JSON.stringify(defaultApps));
-        }
-      } catch {
-        appsArray = defaultApps;
-        localStorage.setItem("apps", JSON.stringify(defaultApps));
-      }
-    } else {
-      appsArray = defaultApps;
-      localStorage.setItem("apps", JSON.stringify(defaultApps));
-    }
+        const docRef = doc(db, "apps", id);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+          const data = snap.data();
+          setAppName(data.name || "");
+         setAppColor(data.color || "");
+setAppUrl(data.url || "");
 
-    const chosen =
-      Number.isFinite(id) && appsArray[id] ? appsArray[id] : appsArray[0];
-    setAppName(chosen.name || "");
-    setAppColor(chosen.color || "");
-    setAppUrl(chosen.url || "");
-    setAppImg(chosen.img || "");
-    setIconFile(null);
+          setAppImg(data.iconUrl || "");
+        } else {
+          console.warn("No such document!");
+        }
+      } catch (err) {
+        console.error("Error fetching app:", err);
+      }
+    };
+    fetchApp();
   }, [id]);
 
   const handleIconPick = (e) => {
@@ -87,39 +64,52 @@ export default function EditApp() {
     fileInputRef.current?.click();
   };
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault();
+    if (!id) return;
 
-    const saved = localStorage.getItem("apps");
-    let appsArray = [];
-    if (saved) {
-      try {
-        appsArray = JSON.parse(saved);
-        if (!Array.isArray(appsArray)) appsArray = [];
-      } catch {
-        appsArray = [];
+    try {
+      setLoading(true);
+
+      let uploadedUrl = appImg || "https://via.placeholder.com/100";
+
+      // If new icon selected, upload
+      if (iconFile) {
+        const formData = new FormData();
+        formData.append("files", iconFile);
+
+        const res = await fetch(
+          "https://imageupload-xfga.onrender.com/api/file/uploadimage",
+          { method: "POST", body: formData }
+        );
+
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          uploadedUrl = data?.data?.[0]?.image || uploadedUrl;
+        } else {
+          const text = await res.text();
+          console.error("Non-JSON response:", text);
+        }
       }
+
+      // Update Firestore doc
+      const docRef = doc(db, "apps", id);
+     await updateDoc(docRef, {
+  name: appName,
+  color: appColor,
+  url: appUrl,
+  iconUrl: uploadedUrl,
+  updatedAt: serverTimestamp(),
+});
+
+
+      router.push("/");
+    } catch (err) {
+      console.error("Error saving app:", err);
+    } finally {
+      setLoading(false);
     }
-
-    const newImg = iconFile
-      ? URL.createObjectURL(iconFile)
-      : appImg || "https://via.placeholder.com/100";
-
-    const updatedApp = {
-      name: appName,
-      color: appColor,
-      url: appUrl,
-      img: newImg,
-    };
-
-    if (Number.isFinite(id) && id >= 0 && id < appsArray.length) {
-      appsArray[id] = updatedApp;
-    } else {
-      appsArray.push(updatedApp);
-    }
-
-    localStorage.setItem("apps", JSON.stringify(appsArray));
-    router.push("/");
   };
 
   return (
@@ -129,7 +119,7 @@ export default function EditApp() {
       {/* Top header */}
       <div className="w-full flex items-center mb-8">
         <button
-          onClick={() => window.history.back()}
+          onClick={() => router.back()}
           className="text-gray-700 cursor-pointer hover:scale-110 transition"
         >
           <MdArrowBack size={28} />
@@ -246,11 +236,12 @@ export default function EditApp() {
         {/* Save Changes button */}
         <button
           type="submit"
+          disabled={loading}
           className="w-full bg-gradient-to-r from-blue-600 to-purple-600 
                      text-white py-3 rounded-xl font-semibold shadow-lg 
-                     hover:scale-105 transition-transform cursor-pointer"
+                     hover:scale-105 transition-transform cursor-pointer disabled:opacity-50"
         >
-          Save Changes
+          {loading ? "Saving..." : "Save Changes"}
         </button>
       </form>
     </div>

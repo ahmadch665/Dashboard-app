@@ -23,3 +23,6 @@ const analytics = typeof window !== "undefined" ? getAnalytics(app) : null;
 const db = getFirestore(app);
 
 export { app, db, analytics };
+
+console.log("Firebase config on Vercel:", firebaseConfig);
+

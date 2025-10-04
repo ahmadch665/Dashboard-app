@@ -40,7 +40,7 @@ export default function GenerateApkContent() {
         <h2 className="text-xl font-semibold text-gray-800 mb-8">{appName}</h2>
 
         {/* Generate APK Button */}
-        <button className="w-full py-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition">
+        <button className="w-full py-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer">
           Generate APK
         </button>
       </div>

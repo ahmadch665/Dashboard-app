@@ -1,3 +1,5 @@
+
+
 // firebase.js
 import { initializeApp } from "firebase/app";
 import { getFirestore } from "firebase/firestore";
@@ -12,6 +14,11 @@ const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
+console.log("🔥 Firebase config:", firebaseConfig);
+
+console.log("✅ projectId:", process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID);
+console.log("🔥 Full Firebase config:", firebaseConfig);
+
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -25,4 +32,3 @@ const db = getFirestore(app);
 export { app, db, analytics };
 
 console.log("Firebase config on Vercel:", firebaseConfig);
-

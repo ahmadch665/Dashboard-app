@@ -15,7 +15,8 @@ export async function POST(req) {
 
     // Paths
     const projectRoot = path.resolve(".");
-    const keystorePath = path.join(projectRoot, "Dashboard-app", "my-release-key.jks");
+const androidPath = path.join(projectRoot, "android");
+const keystorePath = path.join(androidPath, "app", "my-release-key.jks");
     const apkOutput = path.join(projectRoot, "app", "build", "outputs", "apk", "release", "app-release.apk");
 
     // Command for Windows (skip clean to avoid locks)

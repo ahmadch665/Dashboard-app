@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { MdArrowBack } from "react-icons/md";
@@ -11,6 +11,34 @@ export default function GenerateApkContent() {
   const appImg =
     searchParams.get("img") ||
     "https://cdn-icons-png.flaticon.com/512/4712/4712027.png";
+
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+
+  const handleGenerate = async () => {
+    setLoading(true);
+    setMessage("");
+
+    try {
+      const res = await fetch("/api/generate-apk", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ appName }),
+      });
+
+      const data = await res.json();
+
+      if (data.success) {
+        setMessage("✅ " + data.message);
+      } else {
+        setMessage("❌ " + data.error);
+      }
+    } catch (err) {
+      setMessage("❌ " + err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f9eef2] via-[#f5f7fa] to-[#eef2f7] flex flex-col items-center py-10 px-4">
@@ -29,7 +57,6 @@ export default function GenerateApkContent() {
 
       {/* Card */}
       <div className="w-full max-w-md bg-white/70 backdrop-blur-lg rounded-2xl p-8 shadow-xl border border-gray-100 flex flex-col items-center">
-        {/* App Icon */}
         <Image
           src={appImg.startsWith("http") ? appImg : `/images/${appImg}`}
           alt={appName}
@@ -37,12 +64,19 @@ export default function GenerateApkContent() {
           height={112}
           className="mb-6 rounded-xl shadow-md"
         />
-        <h2 className="text-xl font-semibold text-gray-800 mb-8">{appName}</h2>
+        <h2 className="text-xl font-semibold text-gray-800 mb-4">{appName}</h2>
 
-        {/* Generate APK Button */}
-        <button className="w-full py-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer">
-          Generate APK
+        <button
+          onClick={handleGenerate}
+          disabled={loading}
+          className="w-full py-4 rounded-xl font-semibold text-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 shadow-md hover:scale-105 transition cursor-pointer disabled:opacity-50"
+        >
+          {loading ? "Generating..." : "Generate APK"}
         </button>
+
+        {message && (
+          <p className="mt-4 text-center text-sm text-gray-700">{message}</p>
+        )}
       </div>
     </div>
   );

@@ -1,9 +1,7 @@
 plugins {
-
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-
 }
 
 android {
@@ -20,6 +18,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(project.property("MYAPP_RELEASE_STORE_FILE") as String)
+            storePassword = project.property("MYAPP_RELEASE_STORE_PASSWORD") as String
+            keyAlias = project.property("MYAPP_RELEASE_KEY_ALIAS") as String
+            keyPassword = project.property("MYAPP_RELEASE_KEY_PASSWORD") as String
+        }
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -27,15 +34,19 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            signingConfig = signingConfigs.getByName("release") // <-- add signing config
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }

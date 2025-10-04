@@ -20,10 +20,22 @@ android {
 
     signingConfigs {
         create("release") {
-            storeFile = file(project.property("MYAPP_RELEASE_STORE_FILE") as String)
-            storePassword = project.property("MYAPP_RELEASE_STORE_PASSWORD") as String
-            keyAlias = project.property("MYAPP_RELEASE_KEY_ALIAS") as String
-            keyPassword = project.property("MYAPP_RELEASE_KEY_PASSWORD") as String
+            // ✅ Read from project properties or environment variables
+            val storeFilePath = project.findProperty("MYAPP_RELEASE_STORE_FILE")?.toString()
+                ?: System.getenv("MYAPP_RELEASE_STORE_FILE")
+            val storePassword = project.findProperty("MYAPP_RELEASE_STORE_PASSWORD")?.toString()
+                ?: System.getenv("MYAPP_RELEASE_STORE_PASSWORD")
+            val keyAlias = project.findProperty("MYAPP_RELEASE_KEY_ALIAS")?.toString()
+                ?: System.getenv("MYAPP_RELEASE_KEY_ALIAS")
+            val keyPassword = project.findProperty("MYAPP_RELEASE_KEY_PASSWORD")?.toString()
+                ?: System.getenv("MYAPP_RELEASE_KEY_PASSWORD")
+
+            if (storeFilePath != null) {
+                storeFile = file(storeFilePath)
+            }
+            this.storePassword = storePassword
+            this.keyAlias = keyAlias
+            this.keyPassword = keyPassword
         }
     }
 
@@ -34,7 +46,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("release") // <-- add signing config
+            signingConfig = signingConfigs.getByName("release")
         }
     }
 

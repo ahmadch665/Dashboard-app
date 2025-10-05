@@ -25,8 +25,9 @@ jobs:
           distribution: temurin
           java-version: 11
 
-      - name: Decode keystore
+      - name: Prepare keystore path and decode keystore
         run: |
+          mkdir -p Dashboard-app
           echo "$KEYSTORE_BASE64" | base64 --decode > $MYAPP_RELEASE_STORE_FILE
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
